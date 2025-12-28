@@ -1,0 +1,13 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "backend/package.json",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "Burnout_Internal-Round_39/package.json",
+            "use": "@vercel/next"
+        }
+    ]
+}
