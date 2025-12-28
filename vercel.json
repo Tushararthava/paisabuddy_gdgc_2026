@@ -1,6 +1,0 @@
-{
-    "buildCommand": "cd Burnout_Internal-Round_39 && npm install && npm run build",
-    "outputDirectory": "Burnout_Internal-Round_39/.next",
-    "framework": "nextjs",
-    "installCommand": "cd Burnout_Internal-Round_39 && npm install"
-}
