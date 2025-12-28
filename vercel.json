@@ -1,13 +1,6 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "backend/package.json",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "Burnout_Internal-Round_39/package.json",
-            "use": "@vercel/next"
-        }
-    ]
+    "buildCommand": "cd Burnout_Internal-Round_39 && npm install && npm run build",
+    "outputDirectory": "Burnout_Internal-Round_39/.next",
+    "framework": "nextjs",
+    "installCommand": "cd Burnout_Internal-Round_39 && npm install"
 }
