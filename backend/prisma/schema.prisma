@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String?
+  name          String
+  avatar        String?
+  googleId      String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  stockHoldings UserStockHolding[]
+  sipInvestments SIPInvestment[]
+  expenses      Expense[]
+  learningProgress LearningProgress[]
+
+  @@map("users")
+}
+
+model Company {
+  id                    String   @id @default(uuid())
+  companyName           String   @map("company_name")
+  symbol                String   @unique
+  sector                String
+  currentPrice          Float    @map("current_price")
+  marketCapCategory     String   @map("market_cap_category")
+  marketCapInrCrore     Float?   @map("market_cap_inr_crore")
+  peRatio               Float?   @map("pe_ratio")
+  dividendYieldPercent  Float?   @map("dividend_yield_percent")
+  description           String?  @db.Text
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  stockHoldings UserStockHolding[]
+  sipInvestments SIPInvestment[]
+
+  @@map("companies")
+}
+
+model UserStockHolding {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  companyId   String   @map("company_id")
+  quantity    Int
+  buyPrice    Float    @map("buy_price")
+  buyDate     DateTime @map("buy_date") @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyId])
+  @@map("user_stock_holdings")
+}
+
+model SIPInvestment {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  companyId       String   @map("company_id")
+  monthlyAmount   Float    @map("monthly_amount")
+  startDate       DateTime @map("start_date")
+  endDate         DateTime? @map("end_date")
+  isActive        Boolean  @default(true) @map("is_active")
+  totalInvested   Float    @default(0) @map("total_invested")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyId])
+  @@map("sip_investments")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  category    String
+  amount      Float
+  type        String   // need, want, savings
+  description String?  @db.Text
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([date])
+  @@map("expenses")
+}
+
+model LearningProgress {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  lessonId    String   @map("lesson_id")
+  completed   Boolean  @default(false)
+  progress    Int      @default(0)
+  xpEarned    Int      @default(0) @map("xp_earned")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@map("learning_progress")
+}
